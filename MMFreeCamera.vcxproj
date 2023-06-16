@@ -227,6 +227,9 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
     </Link>
+    <PreBuildEvent>
+      <Command>7z a "$(SolutionDir)..\$(SolutionName).zip" "$(OutputPath)*.dll" "$(SolutionDir)\config.toml" "$(SolutionDir)\README.md"</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
