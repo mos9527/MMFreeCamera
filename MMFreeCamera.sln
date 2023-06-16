@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33213.308
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MMFreeCamera", "MMFreeCamera.vcxproj", "{946B8DCD-E9D7-4919-A8A1-345E215ACD87}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Archvie|x64 = Archvie|x64
+		Archvie|x86 = Archvie|x86
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{946B8DCD-E9D7-4919-A8A1-345E215ACD87}.Archvie|x64.ActiveCfg = Archive|x64
+		{946B8DCD-E9D7-4919-A8A1-345E215ACD87}.Archvie|x64.Build.0 = Archive|x64
+		{946B8DCD-E9D7-4919-A8A1-345E215ACD87}.Archvie|x86.ActiveCfg = Archive|Win32
+		{946B8DCD-E9D7-4919-A8A1-345E215ACD87}.Archvie|x86.Build.0 = Archive|Win32
+		{946B8DCD-E9D7-4919-A8A1-345E215ACD87}.Debug|x64.ActiveCfg = Debug|x64
+		{946B8DCD-E9D7-4919-A8A1-345E215ACD87}.Debug|x64.Build.0 = Debug|x64
+		{946B8DCD-E9D7-4919-A8A1-345E215ACD87}.Debug|x86.ActiveCfg = Debug|Win32
+		{946B8DCD-E9D7-4919-A8A1-345E215ACD87}.Debug|x86.Build.0 = Debug|Win32
+		{946B8DCD-E9D7-4919-A8A1-345E215ACD87}.Release|x64.ActiveCfg = Release|x64
+		{946B8DCD-E9D7-4919-A8A1-345E215ACD87}.Release|x64.Build.0 = Release|x64
+		{946B8DCD-E9D7-4919-A8A1-345E215ACD87}.Release|x86.ActiveCfg = Release|Win32
+		{946B8DCD-E9D7-4919-A8A1-345E215ACD87}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9A744D2F-C524-409A-9BE9-F1D186C64394}
+	EndGlobalSection
+EndGlobal
