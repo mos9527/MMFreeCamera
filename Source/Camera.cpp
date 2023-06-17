@@ -1,21 +1,4 @@
 #include "Camera.hpp"
-
-namespace MegaMix {
-	SIG_SCAN(
-		sigInitCameraPPMaybe,
-		0x1404D7BB0,
-		"\x48\x89\x5C\x24\x00\x48\x89\x74\x24\x00\x57\x48\x81\xEC\x00\x00\x00\x00\x48\x8B\x05\x00\x00\x00\x00\x48\x33\xC4\x48\x89\x84\x24\x00\x00\x00\x00",
-		"xxxx?xxxx?xxxx????xxx????xxxxxxx????"
-	)
-		SIG_SCAN(
-			sigUpdateCamera,
-			0x1402FA9F0,
-			"\x48\x8B\xC4\x55\x48\x8D\x68\xE8\x48\x81\xEC\x00\x00\x00\x00\x0F\x29\x70\xE8\x0F\x29\x78\xD8\x44\x0F\x29\x40\x00\x44\x0F\x29\x48\x00",
-			"xxxxxxxxxxx????xxxxxxxxxxxx?xxxx?"
-		);
-	FUNCTION_PTR(Camera*, __fastcall, GetCamera, readRelCall16Address((uint64_t)sigInitCameraPPMaybeAddr + 0x58));
-}
-
 // These functions would be otherwise too small to be reliably sigscanned
 #define HOOK_UPDATE(offset,value) HOOK(void, __fastcall, cameraUpdate##offset, readRelCall16Address((uint64_t)MegaMix::sigUpdateCameraAddr + offset), Camera* camera,value)
 
@@ -47,46 +30,45 @@ HOOK_UPDATE(0x136, float value) {
 
 void CameraWindow::OnFrame() {
 	MegaMix::DivaInputState* input = MegaMix::GetInputState(0);
-	auto directionH = Math::Vec2(camera->focus.x, camera->focus.z) - Math::Vec2(camera->position.x, camera->position.z);
-	auto directionV = Math::Vec2(camera->focus.y, camera->focus.z) - Math::Vec2(camera->position.y, camera->position.z);
+	auto directionH = Math::Vec2(MegaMix::camera->focus.x, MegaMix::camera->focus.z) - Math::Vec2(MegaMix::camera->position.x, MegaMix::camera->position.z);
+	auto directionV = Math::Vec2(MegaMix::camera->focus.y, MegaMix::camera->focus.z) - Math::Vec2(MegaMix::camera->position.y, MegaMix::camera->position.z);
 	if (overrideCamera) {
 		auto LS = input->GetLeftJoystick();
 		auto RS = input->GetRightJoystick();
 		// Position
 		auto speed = !input->IsPressed(MegaMix::DivaInputState::LS) ? normalSpeed : acceleratedSpeed;
-		speed *= LS.norm();
 		if (speed > 0) {
-			auto direction = camera->focus - camera->position;
+			auto direction = MegaMix::camera->focus - MegaMix::camera->position;
 			auto offset = direction.normal() * speed * LS.y;
-			camera->position += offset;
-			direction = camera->ident;
+			MegaMix::camera->position += offset;
+			direction = MegaMix::camera->ident;
 			offset = direction.normal() * speed * LS.x;
-			camera->position += offset;
+			MegaMix::camera->position += offset;
 		}
 		if (input->IsPressed(MegaMix::DivaInputState::LB))
-			camera->position.y -= normalSpeed;
+			MegaMix::camera->position.y -= speed;
 		if (input->IsPressed(MegaMix::DivaInputState::RB))
-			camera->position.y += normalSpeed;
+			MegaMix::camera->position.y += speed;
+		// FOV
+		if (input->IsPressed(MegaMix::DivaInputState::LT))
+			MegaMix::camera->verticalFov += normalSpeed;
+		if (input->IsPressed(MegaMix::DivaInputState::RT))
+			MegaMix::camera->verticalFov -= normalSpeed;
 		// Focus
 		speed = !input->IsPressed(MegaMix::DivaInputState::RS) ? normalSpeed : acceleratedSpeed;
 		rotV += RS.y * speed;
 		rotH += RS.x * speed;
 		Math::Vec2 focus = Math::Vec2<float>::fromRad(rotH);
-		camera->focus.x = camera->position.x + focus.x;
-		camera->focus.z = camera->position.z + focus.y;
-		camera->focus.y = camera->position.y + Math::Vec2<float>::fromRad(rotV).x;
-		// FOV
-		if (input->IsPressed(MegaMix::DivaInputState::LT))
-			camera->verticalFov += normalSpeed;
-		if (input->IsPressed(MegaMix::DivaInputState::RT))
-			camera->verticalFov -= normalSpeed;
+		MegaMix::camera->focus.x = MegaMix::camera->position.x + focus.x;
+		MegaMix::camera->focus.z = MegaMix::camera->position.z + focus.y;
+		MegaMix::camera->focus.y = MegaMix::camera->position.y + Math::Vec2<float>::fromRad(rotV).x;
 		// Rotation
 		if (input->IsPressed(MegaMix::DivaInputState::L))
-			camera->rotation += normalSpeed;
+			MegaMix::camera->rotation += normalSpeed;
 		if (input->IsPressed(MegaMix::DivaInputState::R))
-			camera->rotation -= normalSpeed;
+			MegaMix::camera->rotation -= normalSpeed;
 		// Clamping
-		camera->verticalFov = std::clamp(camera->verticalFov, 0.0f, Math::Angle2Rad(90));
+		MegaMix::camera->verticalFov = std::clamp(MegaMix::camera->verticalFov, 0.0f, Math::Angle2Rad(90));
 	}
 	else {
 		rotV = directionV.rad();
@@ -107,12 +89,11 @@ void CameraWindow::OnFrame() {
 
 #define INSTALL_HOOK_UPDATE(v) INSTALL_HOOK(cameraUpdate##v);
 void CameraWindow::OnInit() {
-	camera = MegaMix::GetCamera();
 	INSTALL_HOOK_UPDATE(0xA7)
-		INSTALL_HOOK_UPDATE(0xCE)
-		INSTALL_HOOK_UPDATE(0x103)
-		INSTALL_HOOK_UPDATE(0x126)
-		INSTALL_HOOK_UPDATE(0x136)
+	INSTALL_HOOK_UPDATE(0xCE)
+	INSTALL_HOOK_UPDATE(0x103)
+	INSTALL_HOOK_UPDATE(0x126)
+	INSTALL_HOOK_UPDATE(0x136)
 }
 
 void CameraWindow::OnImGui() {
@@ -134,24 +115,25 @@ void CameraWindow::OnImGui() {
 	ImGui::Text("Camera Stats");
 	ImGui::Text(
 		"pos=(%.3f,%.3f,%.3f) focus=(%.3f,%.3f,%.3f) ident=(%.3f,%.3f,%.3f) rotation=%.3f",
-		EXPAND3(camera->position),
-		EXPAND3(camera->focus),
-		EXPAND3(camera->ident),
-		camera->rotation
+		EXPAND3(MegaMix::camera->position),
+		EXPAND3(MegaMix::camera->focus),
+		EXPAND3(MegaMix::camera->ident),
+		MegaMix::camera->rotation
 	);
 	ImGui::Text("rotH=%.3f rotV=%.3f", rotH, rotV);
 	ImGui::SeparatorText("CAM SETTINGS");
 	ImGui::Checkbox("OVERRIDE", &overrideCamera);
-	ImGui::SliderAngle("Horizontal FOV", &camera->horizontalFov, 0, 90);
-	ImGui::SliderAngle("Vertical   FOV", &camera->verticalFov, 0, 90);
-#define SLIDER(v) ImGui::SliderFloat(#v, &camera->v, -5, 5);
+	ImGui::SliderAngle("Horizontal FOV", &MegaMix::camera->horizontalFov, 0, 90);
+	ImGui::SliderAngle("Vertical   FOV", &MegaMix::camera->verticalFov, 0, 90);
+#define SLIDER(v) ImGui::SliderFloat(#v, &MegaMix::camera->v, -5, 5);
 	SLIDER(position.x);
 	SLIDER(position.y);
 	SLIDER(position.z);
-	SLIDER(rotation);
+	ImGui::SliderAngle("Rotation", &MegaMix::camera->rotation, -75, 75);
 	ImGui::SliderAngle("Horizontal  Rotation", &rotH, 0, 360);
 	ImGui::SliderAngle("Vertical    Rotation", &rotV, 0, 180);
 	ImGui::SliderFloat("Normal      Speed", &normalSpeed, 0, 0.1);
 	ImGui::SliderFloat("Accelerated Speed", &acceleratedSpeed, 0, 0.1);
 	ImGui::End();
 }
+

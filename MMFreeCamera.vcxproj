@@ -63,6 +63,7 @@
     <Library Include="Dependencies\detours\lib\syelog.lib" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="config.toml" />
     <None Include="Dependencies\detours\lib\detours.pdb" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
