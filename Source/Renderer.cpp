@@ -16,12 +16,12 @@ HOOK(void*, __fastcall, HookSSSPass, MegaMix::SSSPass, void* a1, RendererParams*
 	}
 	return MegaMix::FinalizePass(a1);
 }
-HOOK(void*, __fastcall, HookPass1, MegaMix::sigRndPreProc(), void* a1, RendererParams* a2) {
+HOOK(void*, __fastcall, HookPass1, MegaMix::sigrndpass_render_all_pass_execute_pre3d(), void* a1, RendererParams* a2) {
 	if (MegaMix::pass3DSettings.enabled)
 		return originalHookPass1(a1,a2);
 	return 0;
 }
-HOOK(void*, __fastcall, HookPass2, MegaMix::sigRndProc(), void* a1, RendererParams* a2) {
+HOOK(void*, __fastcall, HookPass2, MegaMix::sigrndpass_render_all_pass_execute_3d(), void* a1, RendererParams* a2) {
 	if (MegaMix::pass3DSettings.enabled)
 		return originalHookPass2(a1, a2);
 	return 0;
