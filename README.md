@@ -1,5 +1,6 @@
 # Hatsune Miku Project Diva Mega Mix+ (M39's+) Free Camera
-![image](https://github.com/mos9527/MMFreeCamera/assets/31397301/ec66b8b0-77b1-41bf-9a60-98733e886044)
+![image](https://github.com/mos9527/MMFreeCamera/assets/31397301/b06d8d56-8281-457c-b3c5-19465b6e7ff5)
+
 ```
 Introduces Free Camera to MegaMix+
 NOTE : Works with controllers only! Seek alternatives if you're using KB&M (i.e. modded TLAC camera)
